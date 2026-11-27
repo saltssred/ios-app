@@ -42,10 +42,13 @@ jobs:
 
       - name: Package IPA
         run: |
-          ls build/Build/Products/
-          APP=$(find build/Build/Products -name 'HADashboard.app' -path '*iphoneos*' | head -1)
-          echo "Found: $APP"
-          test -n "$APP"
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -type d | head -1)
+          if [ -z "$APP" ]; then
+            echo "No .app found — contents of Release-iphoneos:"
+            ls -la build/Build/Products/Release-iphoneos/
+            exit 1
+          fi
+          echo "Packaging: $APP"
           mkdir Payload
           cp -R "$APP" Payload/
           zip -qry HADashboard-unsigned.ipa Payload
