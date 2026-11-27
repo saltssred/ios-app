@@ -1,0 +1,56 @@
+name: Build unsigned device IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1 || true)
+          if [ -z "$XCODE" ]; then
+            XCODE=$(ls -d /Applications/Xcode.app /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          fi
+          sudo xcode-select -s "$XCODE"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build unsigned arm64 device app
+        run: |
+          xcodebuild build \
+            -scheme HADashboard \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+            MARKETING_VERSION=1.0.0-fork \
+            CURRENT_PROJECT_VERSION=1
+
+      - name: Package IPA
+        run: |
+          APP=$(find build/Build/Products -maxdepth 1 -name 'HADashboard.app' -path '*iphoneos*' | head -1)
+          test -n "$APP"
+          mkdir Payload
+          cp -R "$APP" Payload/
+          zip -qry HADashboard-unsigned.ipa Payload
+          ls -lh HADashboard-unsigned.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hadashboard-unsigned-ipa
+          path: HADashboard-unsigned.ipa
