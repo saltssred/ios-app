@@ -9,7 +9,7 @@
     (void)connectionOptions;
     if (![scene isKindOfClass:[UIWindowScene class]]) return;
     if (!self.window) {
-        self.window = [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
+        self.window = [[HAThemeAwareWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
     }
     HAAppDelegate *appDelegate = (HAAppDelegate *)[UIApplication sharedApplication].delegate;
     [appDelegate configureInitialInterfaceInWindow:self.window];
