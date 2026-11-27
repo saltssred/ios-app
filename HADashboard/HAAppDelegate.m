@@ -16,12 +16,6 @@
 #import "HADeviceRegistration.h"
 #import "HAStreamingManager.h"
 
-/// Window subclass that detects system appearance changes (iOS 13+) and posts
-/// HAThemeDidChangeNotification so every view/VC refreshes — not just the
-/// dashboard.  Also catches background→foreground appearance flips that
-/// traitCollectionDidChange on individual VCs can miss.
-@interface HAThemeAwareWindow : UIWindow
-@end
 
 @implementation HAThemeAwareWindow
 
