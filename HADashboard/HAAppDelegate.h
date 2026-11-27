@@ -1,5 +1,8 @@
 #import <UIKit/UIKit.h>
 
+@interface HAThemeAwareWindow : UIWindow
+@end
+
 @interface HAAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
