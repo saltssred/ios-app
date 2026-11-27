@@ -42,7 +42,9 @@ jobs:
 
       - name: Package IPA
         run: |
-          APP=$(find build/Build/Products -maxdepth 1 -name 'HADashboard.app' -path '*iphoneos*' | head -1)
+          ls build/Build/Products/
+          APP=$(find build/Build/Products -name 'HADashboard.app' -path '*iphoneos*' | head -1)
+          echo "Found: $APP"
           test -n "$APP"
           mkdir Payload
           cp -R "$APP" Payload/
